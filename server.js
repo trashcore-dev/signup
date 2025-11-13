@@ -1,6 +1,7 @@
 // server.js
 const express = require('express');
-const nodemailer = require('nodemailer'); // This should import the nodemailer module
+// Ensure nodemailer is imported correctly
+const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
@@ -41,7 +42,8 @@ let emailBlacklist = new Set(); // Permanently registered emails
 let passwordResetTokens = new Map(); // {token: {email, expires}}
 
 // Email transporter configuration - Uses Render's environment variables
-const transporter = nodemailer.createTransporter({ // This should work if nodemailer is properly installed
+// Make sure nodemailer.createTransporter is called correctly
+const transporter = nodemailer.createTransporter({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER, // Must be set in Render dashboard
