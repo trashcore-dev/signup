@@ -1,0 +1,22 @@
+// package.json
+{
+  "name": "auth-server",
+  "version": "1.0.0",
+  "description": "Authentication server for bot deployer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "latest",
+    "nodemailer": "latest",
+    "bcrypt": "latest",
+    "express-rate-limit": "latest",
+    "cors": "latest",
+    "dotenv": "latest"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
