@@ -5,7 +5,14 @@ const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const crypto = require('crypto');
+
+// Load environment variables BEFORE other code
 require('dotenv').config();
+
+// Debug: Log environment variables to verify they're loaded
+console.log('Environment Variables:');
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Loaded' : 'Missing');
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded (masked)' : 'Missing');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +46,15 @@ const transporter = nodemailer.createTransporter({
   auth: {
     user: process.env.EMAIL_USER || 'trashcoreclient@gmail.com',
     pass: process.env.EMAIL_PASS || 'your_app_password_here'
+  }
+});
+
+// Verify email configuration on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('Email configuration error:', error);
+  } else {
+    console.log('Email server is ready to send messages');
   }
 });
 
@@ -347,6 +363,9 @@ app.post('/api/reset-password', async (req, res) => {
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+// Serve static files (for your HTML pages)
+app.use(express.static('public'));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
