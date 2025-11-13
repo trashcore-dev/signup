@@ -6,16 +6,16 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const crypto = require('crypto');
 
-// Load environment variables BEFORE other code
-require('dotenv').config();
-
-// Debug: Log environment variables to verify they're loaded
-console.log('Environment Variables:');
-console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Loaded' : 'Missing');
-console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded (masked)' : 'Missing');
+// No need to require('dotenv').config(); since we're using Render's environment variables
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Render sets process.env.PORT
+
+// Debug: Log environment variables to verify they're loaded from Render
+console.log('Environment Variables from Render:');
+console.log('PORT:', process.env.PORT);
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Loaded' : 'Missing');
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded (masked)' : 'Missing');
 
 // Middleware
 app.use(express.json());
@@ -40,19 +40,19 @@ let otpStore = new Map(); // {email: {code, expires, attempts}}
 let emailBlacklist = new Set(); // Permanently registered emails
 let passwordResetTokens = new Map(); // {token: {email, expires}}
 
-// Email transporter configuration
+// Email transporter configuration - Uses Render's environment variables
 const transporter = nodemailer.createTransporter({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER || 'trashcoreclient@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your_app_password_here'
+    user: process.env.EMAIL_USER, // Must be set in Render dashboard
+    pass: process.env.EMAIL_PASS  // Must be set in Render dashboard
   }
 });
 
 // Verify email configuration on startup
 transporter.verify((error, success) => {
   if (error) {
-    console.error('Email configuration error:', error);
+    console.error('Email configuration error (check Render environment variables):', error);
   } else {
     console.log('Email server is ready to send messages');
   }
@@ -110,7 +110,7 @@ app.post('/api/register', otpLimiter, async (req, res) => {
 
     // Send OTP email
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'trashcoreclient@gmail.com',
+      from: process.env.EMAIL_USER, // Uses Render's environment variable
       to: email,
       subject: 'Verify Your Account - Bot Deployer',
       html: `
@@ -275,7 +275,7 @@ app.post('/api/forgot-password', otpLimiter, async (req, res) => {
     // Send reset email
     const resetUrl = `${req.get('host')}/reset-password/${resetToken}`;
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'trashcoreclient@gmail.com',
+      from: process.env.EMAIL_USER, // Uses Render's environment variable
       to: email,
       subject: 'Password Reset Request - Bot Deployer',
       html: `
@@ -364,7 +364,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Serve static files (for your HTML pages)
+// Serve static files (for your HTML pages like signup.html, index.html)
 app.use(express.static('public'));
 
 app.listen(PORT, () => {
