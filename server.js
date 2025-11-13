@@ -1,6 +1,6 @@
 // server.js
 const express = require('express');
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer'); // This should import the nodemailer module
 const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
@@ -9,7 +9,7 @@ const crypto = require('crypto');
 // No need to require('dotenv').config(); since we're using Render's environment variables
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Render sets process.env.PORT
+const PORT = process.env.PORT || 3000;
 
 // Debug: Log environment variables to verify they're loaded from Render
 console.log('Environment Variables from Render:');
@@ -41,7 +41,7 @@ let emailBlacklist = new Set(); // Permanently registered emails
 let passwordResetTokens = new Map(); // {token: {email, expires}}
 
 // Email transporter configuration - Uses Render's environment variables
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransporter({ // This should work if nodemailer is properly installed
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER, // Must be set in Render dashboard
